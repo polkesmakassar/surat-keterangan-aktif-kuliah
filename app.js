@@ -9,7 +9,7 @@
 // ============================================================
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwzqcOz3LlYdZye-XRg1FxHv1xPVm2D6KF32ZEMwxIRfJqjBZNCgEeTvuvtthaXl-mg/exec";
+  "https://script.google.com/macros/s/AKfycbwzqcOz3LlYdZye-XRg1FxHv1xPVm2D6KF32ZEMIRFjQjBZNCgEeTvuvtthaXl-mg/exec";
 
 
 // ============================================================
@@ -39,11 +39,18 @@ document.addEventListener(
 
     setupPagination();
 
-    loadMasterData();
+    // ==========================================
+    // OPTIMASI:
+    // Sebelumnya 3 request:
+    // loadMasterData()
+    // loadTotalData()
+    // loadData()
+    //
+    // Sekarang cukup 1 request:
+    // loadInitialData()
+    // ==========================================
 
-    loadTotalData();
-
-    loadData();
+    loadInitialData();
 
   }
 );
@@ -113,6 +120,162 @@ async function apiRequest(
 
 
 // ============================================================
+// LOAD INITIAL DATA
+// ============================================================
+// 1 REQUEST untuk:
+// - Master Prodi
+// - Master Program
+// - Master Jurusan
+// - Semester
+// - Total Data
+// - Data tabel
+// ============================================================
+
+async function loadInitialData() {
+
+  try {
+
+    showLoading(
+      true,
+      "Memuat data..."
+    );
+
+
+    const result =
+      await apiRequest(
+        "getInitialData",
+        {
+          search:
+            "",
+
+          page:
+            1,
+
+          pageSize:
+            pageSize
+        }
+      );
+
+
+    // ==========================================
+    // MASTER PRODI
+    // ==========================================
+
+    populateSelect(
+      "prodi",
+      result.prodi || [],
+      "Pilih Prodi"
+    );
+
+
+    // ==========================================
+    // MASTER PROGRAM
+    // ==========================================
+
+    populateSelect(
+      "program",
+      result.program || [],
+      "Pilih Program"
+    );
+
+
+    // ==========================================
+    // MASTER JURUSAN
+    // ==========================================
+
+    populateSelect(
+      "jurusan",
+      result.jurusan || [],
+      "Pilih Jurusan"
+    );
+
+
+    // ==========================================
+    // MASTER SEMESTER
+    // ==========================================
+
+    populateSelect(
+      "semester",
+      result.semester || [],
+      "Pilih Semester"
+    );
+
+
+    // ==========================================
+    // TOTAL DATA
+    // ==========================================
+
+    const totalElement =
+      document.getElementById(
+        "totalData"
+      );
+
+
+    if (totalElement) {
+
+      totalElement.textContent =
+        result.total || 0;
+
+    }
+
+
+    // ==========================================
+    // PAGE
+    // ==========================================
+
+    currentPage =
+      Number(
+        result.page || 1
+      );
+
+
+    // ==========================================
+    // TABLE
+    // ==========================================
+
+    renderTable(
+      result
+    );
+
+
+    // ==========================================
+    // PAGINATION
+    // ==========================================
+
+    updatePagination(
+      result
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "Gagal memuat data awal:",
+      error
+    );
+
+
+    showToast(
+      error.message ||
+      "Data awal gagal dimuat.",
+      "error"
+    );
+
+  }
+
+  finally {
+
+    showLoading(
+      false
+    );
+
+  }
+
+}
+
+
+// ============================================================
 // NIM
 // ============================================================
 
@@ -127,7 +290,8 @@ function setupNIM() {
   if (!input) return;
 
 
-  input.value = "PO71";
+  input.value =
+    "PO71";
 
 
   input.addEventListener(
@@ -334,7 +498,7 @@ async function submitForm(
             nama:
               nama,
 
-            tempatLahir:
+            tempat:
               tempatLahir,
 
             tanggalLahir:
@@ -406,6 +570,10 @@ async function submitForm(
       }
 
 
+      // ========================================
+      // REFRESH TOTAL + TABLE
+      // ========================================
+
       await loadTotalData();
 
       await loadData();
@@ -413,7 +581,9 @@ async function submitForm(
     }
 
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
       error
@@ -427,7 +597,9 @@ async function submitForm(
     );
 
 
-  } finally {
+  }
+
+  finally {
 
     showLoading(
       false
@@ -440,6 +612,9 @@ async function submitForm(
 
 // ============================================================
 // LOAD MASTER DATA
+// ============================================================
+// Tetap dipertahankan untuk kompatibilitas.
+// Tidak dipanggil saat initial loading.
 // ============================================================
 
 async function loadMasterData() {
@@ -454,33 +629,35 @@ async function loadMasterData() {
 
     populateSelect(
       "prodi",
-      data.prodi,
+      data.prodi || [],
       "Pilih Prodi"
     );
 
 
     populateSelect(
       "program",
-      data.program,
+      data.program || [],
       "Pilih Program"
     );
 
 
     populateSelect(
       "jurusan",
-      data.jurusan,
+      data.jurusan || [],
       "Pilih Jurusan"
     );
 
 
     populateSelect(
       "semester",
-      data.semester,
+      data.semester || [],
       "Pilih Semester"
     );
 
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
       "Gagal memuat master:",
@@ -599,7 +776,9 @@ async function loadTotalData() {
 
     }
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
       error
@@ -645,7 +824,9 @@ async function loadData() {
     );
 
 
-  } catch (error) {
+  }
+
+  catch (error) {
 
     console.error(
       error
@@ -798,7 +979,9 @@ function renderTable(
                 value
               );
 
-          } else {
+          }
+
+          else {
 
             td.textContent =
               value || "-";
@@ -1035,19 +1218,35 @@ function setupSearch() {
   if (!input) return;
 
 
+  let searchTimer;
+
+
   input.addEventListener(
     "input",
     function () {
 
-      currentKeyword =
-        this.value.trim();
+      clearTimeout(
+        searchTimer
+      );
 
 
-      currentPage =
-        1;
+      searchTimer =
+        setTimeout(
+          function () {
+
+            currentKeyword =
+              input.value.trim();
 
 
-      loadData();
+            currentPage =
+              1;
+
+
+            loadData();
+
+          },
+          300
+        );
 
     }
   );
@@ -1199,7 +1398,9 @@ function showLoading(
       "show"
     );
 
-  } else {
+  }
+
+  else {
 
     overlay.classList.remove(
       "show"
@@ -1234,7 +1435,8 @@ function showToast(
 
 
   toast.className =
-    "toast " + type;
+    "toast " +
+    type;
 
 
   toast.classList.add(
