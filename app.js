@@ -1,13 +1,19 @@
 // ============================================================
-// API URL
+// SUKET AKTIF KULIAH - FRONTEND
+// Poltekkes Kemenkes Makassar
+// ============================================================
+
+
+// ============================================================
+// API
 // ============================================================
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwx74oBw09tFwG-juSYQ_vP55JZdRgFJDw1N1XOT7R0liFbZe9KTdbqKu-XrRMZggx0Fg/exec";
+  "https://script.google.com/macros/s/AKfycbwzqcOz3LlYdZye-XRg1FxHv1xPVm2D6KF32ZEMwxIRfJqjBZNCgEeTvuvtthaXl-mg/exec";
 
 
 // ============================================================
-// GLOBAL
+// STATE
 // ============================================================
 
 let currentPage = 1;
@@ -16,9 +22,31 @@ const pageSize = 10;
 
 let currentKeyword = "";
 
-let currentHeaders = [];
 
-let searchTimer = null;
+// ============================================================
+// DOM READY
+// ============================================================
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function () {
+
+    setupNIM();
+
+    setupForm();
+
+    setupSearch();
+
+    setupPagination();
+
+    loadMasterData();
+
+    loadTotalData();
+
+    loadData();
+
+  }
+);
 
 
 // ============================================================
@@ -43,7 +71,9 @@ async function apiRequest(
 
         body:
           JSON.stringify({
-            action: action,
+            action:
+              action,
+
             ...data
           })
       }
@@ -83,25 +113,67 @@ async function apiRequest(
 
 
 // ============================================================
-// ON LOAD
+// NIM
 // ============================================================
 
-document.addEventListener(
-  "DOMContentLoaded",
-  function() {
+function setupNIM() {
 
-    setupNIM();
+  const input =
+    document.getElementById(
+      "nim"
+    );
 
-    setupForm();
 
-    loadMasterData();
+  if (!input) return;
 
-    loadTotalData();
 
-    loadData();
+  input.value = "PO71";
 
-  }
-);
+
+  input.addEventListener(
+    "input",
+    function () {
+
+      let value =
+        this.value
+          .toUpperCase();
+
+
+      // Hilangkan semua karakter
+      // selain PO71 dan angka
+
+      if (
+        !value.startsWith("PO71")
+      ) {
+
+        value =
+          "PO71" +
+          value.replace(
+            /[^0-9]/g,
+            ""
+          );
+
+      }
+
+
+      const digits =
+        value
+          .substring(4)
+          .replace(
+            /[^0-9]/g,
+            ""
+          )
+          .substring(0, 10);
+
+
+      this.value =
+        "PO71" +
+        digits;
+
+    }
+  );
+
+}
 
 
 // ============================================================
@@ -110,140 +182,264 @@ document.addEventListener(
 
 function setupForm() {
 
-  document
-    .getElementById(
+  const form =
+    document.getElementById(
       "mahasiswaForm"
-    )
-    .addEventListener(
-      "submit",
-      submitForm
     );
 
 
-  document
-    .getElementById(
-      "searchInput"
-    )
-    .addEventListener(
-      "input",
-      searchData
-    );
+  if (!form) return;
 
 
-  document
-    .getElementById(
-      "prevButton"
-    )
-    .addEventListener(
-      "click",
-      previousPage
-    );
-
-
-  document
-    .getElementById(
-      "nextButton"
-    )
-    .addEventListener(
-      "click",
-      nextPage
-    );
+  form.addEventListener(
+    "submit",
+    submitForm
+  );
 
 }
 
 
 // ============================================================
-// NIM
-//
-// PREFIX OTOMATIS PO71
-//
-// USER HANYA MENGETIK ANGKA
-//
-// Contoh:
-// input 9
-// hasil PO719
-//
-// input 1234567890
-// hasil PO711234567890
+// SUBMIT FORM
 // ============================================================
 
-function setupNIM() {
+async function submitForm(
+  event
+) {
 
-  const nimInput =
-    document.getElementById(
-      "nim"
+  event.preventDefault();
+
+
+  const form =
+    event.target;
+
+
+  const nim =
+    document
+      .getElementById("nim")
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  const nama =
+    document
+      .getElementById("nama")
+      .value
+      .trim();
+
+
+  const tempatLahir =
+    document
+      .getElementById("tempat")
+      .value
+      .trim();
+
+
+  const tanggalLahir =
+    document
+      .getElementById("tanggalLahir")
+      .value;
+
+
+  const prodi =
+    document
+      .getElementById("prodi")
+      .value;
+
+
+  const program =
+    document
+      .getElementById("program")
+      .value;
+
+
+  const jurusan =
+    document
+      .getElementById("jurusan")
+      .value;
+
+
+  const semester =
+    document
+      .getElementById("semester")
+      .value;
+
+
+  // ----------------------------------------------------------
+  // VALIDASI NIM
+  // ----------------------------------------------------------
+
+  if (
+    !/^PO71[0-9]{10}$/.test(
+      nim
+    )
+  ) {
+
+    showToast(
+      "NIM harus PO71 + 10 digit angka.",
+      "error"
     );
 
+    return;
 
-  nimInput.addEventListener(
-    "input",
-    function() {
-
-      let digits =
-        this.value
-          .replace(
-            /^PO71/i,
-            ""
-          )
-          .replace(
-            /[^0-9]/g,
-            ""
-          );
+  }
 
 
-      digits =
-        digits.substring(
-          0,
-          10
-        );
+  // ----------------------------------------------------------
+  // VALIDASI
+  // ----------------------------------------------------------
+
+  if (
+    !nama ||
+    !tempatLahir ||
+    !tanggalLahir ||
+    !prodi ||
+    !program ||
+    !jurusan ||
+    !semester
+  ) {
+
+    showToast(
+      "Semua data wajib diisi.",
+      "error"
+    );
+
+    return;
+
+  }
 
 
-      this.value =
-        "PO71" + digits;
+  // ----------------------------------------------------------
+  // LOADING
+  // ----------------------------------------------------------
 
-    }
+  showLoading(
+    true,
+    "Menyimpan data dan membuat surat..."
   );
 
 
-  nimInput.addEventListener(
-    "focus",
-    function() {
+  try {
 
-      if (
-        !this.value
-      ) {
+    const result =
+      await apiRequest(
+        "saveMahasiswa",
+        {
+          data: {
 
-        this.value =
+            nim:
+              nim,
+
+            nama:
+              nama,
+
+            tempatLahir:
+              tempatLahir,
+
+            tanggalLahir:
+              tanggalLahir,
+
+            prodi:
+              prodi,
+
+            program:
+              program,
+
+            jurusan:
+              jurusan,
+
+            semester:
+              semester
+
+          }
+
+        }
+      );
+
+
+    // --------------------------------------------------------
+    // DUPLIKAT
+    // --------------------------------------------------------
+
+    if (
+      result.duplicate
+    ) {
+
+      showToast(
+        result.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    // --------------------------------------------------------
+    // BERHASIL
+    // --------------------------------------------------------
+
+    if (
+      result.success
+    ) {
+
+      showResultModal(
+        result
+      );
+
+
+      form.reset();
+
+
+      const nimInput =
+        document.getElementById(
+          "nim"
+        );
+
+
+      if (nimInput) {
+
+        nimInput.value =
           "PO71";
 
       }
 
-    }
-  );
 
+      await loadTotalData();
 
-  nimInput.addEventListener(
-    "blur",
-    function() {
-
-      if (
-        this.value ===
-        "PO71"
-      ) {
-
-        this.value =
-          "";
-
-      }
+      await loadData();
 
     }
-  );
+
+
+  } catch (error) {
+
+    console.error(
+      error
+    );
+
+
+    showToast(
+      error.message ||
+      "Terjadi kesalahan.",
+      "error"
+    );
+
+
+  } finally {
+
+    showLoading(
+      false
+    );
+
+  }
 
 }
 
 
 // ============================================================
-// LOAD MASTER
+// LOAD MASTER DATA
 // ============================================================
 
 async function loadMasterData() {
@@ -286,9 +482,15 @@ async function loadMasterData() {
 
   } catch (error) {
 
+    console.error(
+      "Gagal memuat master:",
+      error
+    );
+
+
     showToast(
-      "Gagal memuat master data: " +
-      error.message
+      "Master data gagal dimuat.",
+      "error"
     );
 
   }
@@ -302,7 +504,7 @@ async function loadMasterData() {
 
 function populateSelect(
   elementId,
-  values,
+  items,
   placeholder
 ) {
 
@@ -312,7 +514,11 @@ function populateSelect(
     );
 
 
-  select.innerHTML = "";
+  if (!select) return;
+
+
+  select.innerHTML =
+    "";
 
 
   const defaultOption =
@@ -321,7 +527,9 @@ function populateSelect(
     );
 
 
-  defaultOption.value = "";
+  defaultOption.value =
+    "";
+
 
   defaultOption.textContent =
     placeholder;
@@ -332,10 +540,13 @@ function populateSelect(
   );
 
 
-  (
-    values || []
-  ).forEach(
-    function(value) {
+  if (
+    !Array.isArray(items)
+  ) return;
+
+
+  items.forEach(
+    function (item) {
 
       const option =
         document.createElement(
@@ -344,10 +555,11 @@ function populateSelect(
 
 
       option.value =
-        value;
+        item;
+
 
       option.textContent =
-        value;
+        item;
 
 
       select.appendChild(
@@ -361,262 +573,7 @@ function populateSelect(
 
 
 // ============================================================
-// SUBMIT
-// ============================================================
-
-async function submitForm(
-  event
-) {
-
-  event.preventDefault();
-
-
-  const form =
-    document.getElementById(
-      "mahasiswaForm"
-    );
-
-
-  if (
-    !form.checkValidity()
-  ) {
-
-    form.reportValidity();
-
-    return;
-
-  }
-
-
-  const nim =
-    document
-      .getElementById(
-        "nim"
-      )
-      .value
-      .trim()
-      .toUpperCase();
-
-
-  // ========================================================
-  // VALIDASI NIM
-  // ========================================================
-
-  if (
-    !/^PO71[0-9]{10}$/.test(
-      nim
-    )
-  ) {
-
-    showToast(
-      "NIM harus berformat PO71 + 10 angka."
-    );
-
-
-    document
-      .getElementById(
-        "nim"
-      )
-      .focus();
-
-
-    return;
-
-  }
-
-
-  if (
-    nim.length !== 14
-  ) {
-
-    showToast(
-      "NIM harus terdiri dari 14 karakter."
-    );
-
-    return;
-
-  }
-
-
-  const data = {
-
-    nim: nim,
-
-    nama:
-      document
-        .getElementById(
-          "nama"
-        )
-        .value
-        .trim(),
-
-    tempatLahir:
-      document
-        .getElementById(
-          "tempat"
-        )
-        .value
-        .trim(),
-
-    tanggalLahir:
-      document
-        .getElementById(
-          "tanggalLahir"
-        )
-        .value,
-
-    prodi:
-      document
-        .getElementById(
-          "prodi"
-        )
-        .value,
-
-    program:
-      document
-        .getElementById(
-          "program"
-        )
-        .value,
-
-    jurusan:
-      document
-        .getElementById(
-          "jurusan"
-        )
-        .value,
-
-    semester:
-      document
-        .getElementById(
-          "semester"
-        )
-        .value
-
-  };
-
-
-  showLoading();
-
-
-  const submitButton =
-    document.getElementById(
-      "submitButton"
-    );
-
-
-  submitButton.disabled =
-    true;
-
-
-  try {
-
-    const result =
-      await apiRequest(
-        "saveMahasiswa",
-        {
-          data: data
-        }
-      );
-
-
-    hideLoading();
-
-
-    submitButton.disabled =
-      false;
-
-
-    if (
-      !result ||
-      !result.success
-    ) {
-
-      showToast(
-        result &&
-        result.message
-          ? result.message
-          : "Proses gagal."
-      );
-
-
-      return;
-
-    }
-
-
-    resetForm();
-
-    await loadTotalData();
-
-
-    currentPage = 1;
-
-    await loadData();
-
-
-    if (
-      result.draftUrl ||
-      result.pdfUrl
-    ) {
-
-      renderDraftResult(
-        result
-      );
-
-    } else {
-
-      showToast(
-        result.warning ||
-        result.message ||
-        "Data berhasil disimpan."
-      );
-
-    }
-
-
-  } catch (error) {
-
-    hideLoading();
-
-    submitButton.disabled =
-      false;
-
-
-    showToast(
-      error.message ||
-      "Terjadi kesalahan."
-    );
-
-  }
-
-}
-
-
-// ============================================================
-// RESET
-// ============================================================
-
-function resetForm() {
-
-  document
-    .getElementById(
-      "mahasiswaForm"
-    )
-    .reset();
-
-
-  document
-    .getElementById(
-      "nim"
-    )
-    .value = "";
-
-}
-
-
-// ============================================================
-// TOTAL
+// LOAD TOTAL
 // ============================================================
 
 async function loadTotalData() {
@@ -629,27 +586,24 @@ async function loadTotalData() {
       );
 
 
-    document
-      .getElementById(
+    const element =
+      document.getElementById(
         "totalData"
-      )
-      .textContent =
-      Number(
-        result.total || 0
-      )
-        .toLocaleString(
-          "id-ID"
-        );
+      );
 
+
+    if (element) {
+
+      element.textContent =
+        result.total || 0;
+
+    }
 
   } catch (error) {
 
-    document
-      .getElementById(
-        "totalData"
-      )
-      .textContent =
-      "-";
+    console.error(
+      error
+    );
 
   }
 
@@ -661,9 +615,6 @@ async function loadTotalData() {
 // ============================================================
 
 async function loadData() {
-
-  showTableLoading();
-
 
   try {
 
@@ -679,6 +630,7 @@ async function loadData() {
 
           pageSize:
             pageSize
+
         }
       );
 
@@ -695,54 +647,17 @@ async function loadData() {
 
   } catch (error) {
 
-    document
-      .getElementById(
-        "tableBody"
-      )
-      .innerHTML =
-      `
-      <tr>
-        <td
-          colspan="20"
-          class="empty-state"
-        >
-          Gagal memuat data.
-        </td>
-      </tr>
-      `;
+    console.error(
+      error
+    );
 
 
     showToast(
-      "Gagal memuat data: " +
-      error.message
+      "Data mahasiswa gagal dimuat.",
+      "error"
     );
 
   }
-
-}
-
-
-// ============================================================
-// TABLE LOADING
-// ============================================================
-
-function showTableLoading() {
-
-  document
-    .getElementById(
-      "tableBody"
-    )
-    .innerHTML =
-    `
-    <tr>
-      <td
-        colspan="20"
-        class="empty-state"
-      >
-        Memuat data...
-      </td>
-    </tr>
-    `;
 
 }
 
@@ -767,97 +682,24 @@ function renderTable(
     );
 
 
-  head.innerHTML = "";
-
-  body.innerHTML = "";
-
-
-  if (
-    !result ||
-    !result.headers ||
-    result.headers.length === 0
-  ) {
-
-    body.innerHTML =
-      `
-      <tr>
-        <td
-          colspan="20"
-          class="empty-state"
-        >
-          Belum ada data.
-        </td>
-      </tr>
-      `;
-
-
+  if (!head || !body)
     return;
 
-  }
+
+  head.innerHTML =
+    "";
 
 
-  currentHeaders =
-    result.headers;
+  body.innerHTML =
+    "";
 
 
-  const preferredHeaders = [
-
-    "NIM",
-
-    "NAMA MAHASISWA",
-
-    "PRODI",
-
-    "PROGRAM",
-
-    "JURUSAN",
-
-    "SEMESTER",
-
-    "DRAFT SUKET"
-
-  ];
+  const headers =
+    result.headers || [];
 
 
-  const indexes = [];
-
-
-  preferredHeaders.forEach(
-    function(header) {
-
-      const index =
-        findHeaderIndex(
-          result.headers,
-          header
-        );
-
-
-      if (
-        index !== -1
-      ) {
-
-        indexes.push({
-          header:
-            header,
-
-          index:
-            index
-        });
-
-      }
-
-    }
-  );
-
-
-  const trHead =
-    document.createElement(
-      "tr"
-    );
-
-
-  indexes.forEach(
-    function(item) {
+  headers.forEach(
+    function (header) {
 
       const th =
         document.createElement(
@@ -866,10 +708,10 @@ function renderTable(
 
 
       th.textContent =
-        item.header;
+        header;
 
 
-      trHead.appendChild(
+      head.appendChild(
         th
       );
 
@@ -877,14 +719,12 @@ function renderTable(
   );
 
 
-  head.appendChild(
-    trHead
-  );
+  const rows =
+    result.rows || [];
 
 
   if (
-    !result.rows ||
-    result.rows.length === 0
+    rows.length === 0
   ) {
 
     const tr =
@@ -900,17 +740,15 @@ function renderTable(
 
 
     td.colSpan =
-      indexes.length || 1;
-
-
-    td.className =
-      "empty-state";
+      headers.length || 1;
 
 
     td.textContent =
-      currentKeyword
-        ? "Data tidak ditemukan."
-        : "Belum ada data mahasiswa.";
+      "Belum ada data.";
+
+
+    td.style.textAlign =
+      "center";
 
 
     tr.appendChild(
@@ -928,8 +766,8 @@ function renderTable(
   }
 
 
-  result.rows.forEach(
-    function(row) {
+  rows.forEach(
+    function (row) {
 
       const tr =
         document.createElement(
@@ -937,8 +775,11 @@ function renderTable(
         );
 
 
-      indexes.forEach(
-        function(item) {
+      row.forEach(
+        function (
+          value,
+          index
+        ) {
 
           const td =
             document.createElement(
@@ -946,38 +787,21 @@ function renderTable(
             );
 
 
-          const value =
-            row[item.index] || "";
-
-
           if (
-            item.header ===
-            "NIM"
-          ) {
-
-            td.className =
-              "nim-cell";
-
-
-            td.textContent =
-              value;
-
-
-          } else if (
-            item.header ===
-            "DRAFT SUKET"
+            headers[index] ===
+            "DRAFT SUKET" &&
+            value
           ) {
 
             td.innerHTML =
-              renderDraftActions(
+              createDraftButton(
                 value
               );
-
 
           } else {
 
             td.textContent =
-              value;
+              value || "-";
 
           }
 
@@ -1001,56 +825,16 @@ function renderTable(
 
 
 // ============================================================
-// FIND HEADER
+// CREATE DRAFT BUTTON
 // ============================================================
 
-function findHeaderIndex(
-  headers,
-  target
-) {
-
-  const normalizedTarget =
-    String(target)
-      .trim()
-      .toUpperCase();
-
-
-  return headers.findIndex(
-    function(header) {
-
-      return String(
-        header
-      )
-        .trim()
-        .toUpperCase() ===
-        normalizedTarget;
-
-    }
-  );
-
-}
-
-
-// ============================================================
-// DRAFT ACTIONS
-// ============================================================
-
-function renderDraftActions(
+function createDraftButton(
   url
 ) {
 
   if (!url) {
 
-    return `
-      <span
-        style="
-          color:#98a2b3;
-          font-size:11px;
-        "
-      >
-        Belum tersedia
-      </span>
-    `;
+    return "-";
 
   }
 
@@ -1061,48 +845,52 @@ function renderDraftActions(
     );
 
 
-  let pdfUrl =
-    "";
+  if (!match) {
 
-
-  if (match) {
-
-    pdfUrl =
-      "https://docs.google.com/document/d/" +
-      match[1] +
-      "/export?format=pdf";
+    return `
+      <a
+        href="${escapeHtml(url)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-draft"
+      >
+        📄 Buka Draft
+      </a>
+    `;
 
   }
+
+
+  const docId =
+    match[1];
+
+
+  const pdfUrl =
+    "https://docs.google.com/document/d/" +
+    docId +
+    "/export?format=pdf";
 
 
   return `
     <div class="draft-actions">
 
       <a
-        href="${escapeAttribute(url)}"
+        href="${escapeHtml(url)}"
         target="_blank"
         rel="noopener noreferrer"
-        class="draft-btn draft"
+        class="btn-draft"
       >
-        📄 Buka Draft
+        📄 Draft
       </a>
 
-      ${
-        pdfUrl
-          ?
-          `
-          <a
-            href="${escapeAttribute(pdfUrl)}"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="draft-btn pdf"
-          >
-            ⬇ PDF
-          </a>
-          `
-          :
-          ""
-      }
+      <a
+        href="${pdfUrl}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn-pdf"
+      >
+        PDF
+      </a>
 
     </div>
   `;
@@ -1111,94 +899,65 @@ function renderDraftActions(
 
 
 // ============================================================
-// SEARCH
+// PAGINATION
 // ============================================================
 
-function searchData() {
+function setupPagination() {
 
-  clearTimeout(
-    searchTimer
-  );
-
-
-  searchTimer =
-    setTimeout(
-      function() {
-
-        currentKeyword =
-          document
-            .getElementById(
-              "searchInput"
-            )
-            .value
-            .trim();
+  const prev =
+    document.getElementById(
+      "prevButton"
+    );
 
 
-        currentPage = 1;
+  const next =
+    document.getElementById(
+      "nextButton"
+    );
 
+
+  if (prev) {
+
+    prev.addEventListener(
+      "click",
+      function () {
+
+        if (
+          currentPage > 1
+        ) {
+
+          currentPage--;
+
+          loadData();
+
+        }
+
+      }
+    );
+
+  }
+
+
+  if (next) {
+
+    next.addEventListener(
+      "click",
+      function () {
+
+        currentPage++;
 
         loadData();
 
-      },
-      350
+      }
     );
 
-}
-
-
-// ============================================================
-// PREVIOUS
-// ============================================================
-
-function previousPage() {
-
-  if (
-    currentPage <= 1
-  ) {
-
-    return;
-
   }
 
-
-  currentPage--;
-
-  loadData();
-
 }
 
 
 // ============================================================
-// NEXT
-// ============================================================
-
-function nextPage() {
-
-  const button =
-    document
-      .getElementById(
-        "nextButton"
-      );
-
-
-  if (
-    button.disabled
-  ) {
-
-    return;
-
-  }
-
-
-  currentPage++;
-
-  loadData();
-
-}
-
-
-// ============================================================
-// PAGINATION
+// UPDATE PAGINATION
 // ============================================================
 
 function updatePagination(
@@ -1223,74 +982,98 @@ function updatePagination(
     );
 
 
-  const total =
-    Number(
-      result.total || 0
-    );
-
-
   const totalPages =
     Number(
       result.totalPages || 0
     );
 
 
-  prev.disabled =
-    currentPage <= 1;
+  if (prev) {
 
-
-  next.disabled =
-    currentPage >= totalPages ||
-    totalPages === 0;
-
-
-  if (
-    total === 0
-  ) {
-
-    info.textContent =
-      "Tidak ada data.";
-
-
-    return;
+    prev.disabled =
+      currentPage <= 1;
 
   }
 
 
-  const start =
-    (
-      (currentPage - 1) *
-      pageSize
-    ) + 1;
+  if (next) {
+
+    next.disabled =
+      totalPages === 0 ||
+      currentPage >=
+      totalPages;
+
+  }
 
 
-  const end =
-    Math.min(
-      currentPage *
-      pageSize,
-      total
-    );
+  if (info) {
 
+    info.textContent =
+      totalPages === 0
+        ? "0 / 0"
+        : currentPage +
+          " / " +
+          totalPages;
 
-  info.textContent =
-    "Menampilkan " +
-    start +
-    "–" +
-    end +
-    " dari " +
-    total +
-    " data";
+  }
 
 }
 
 
 // ============================================================
-// HASIL DRAFT
+// SEARCH
 // ============================================================
 
-function renderDraftResult(
+function setupSearch() {
+
+  const input =
+    document.getElementById(
+      "searchInput"
+    );
+
+
+  if (!input) return;
+
+
+  input.addEventListener(
+    "input",
+    function () {
+
+      currentKeyword =
+        this.value.trim();
+
+
+      currentPage =
+        1;
+
+
+      loadData();
+
+    }
+  );
+
+}
+
+
+// ============================================================
+// RESULT MODAL
+// ============================================================
+
+function showResultModal(
   result
 ) {
+
+  const modal =
+    document.getElementById(
+      "resultModal"
+    );
+
+
+  const text =
+    document.getElementById(
+      "resultText"
+    );
+
 
   const draftLink =
     document.getElementById(
@@ -1304,13 +1087,21 @@ function renderDraftResult(
     );
 
 
-  const resultText =
-    document.getElementById(
-      "resultText"
-    );
+  if (!modal)
+    return;
+
+
+  if (text) {
+
+    text.textContent =
+      result.message ||
+      "Data berhasil disimpan.";
+
+  }
 
 
   if (
+    draftLink &&
     result.draftUrl
   ) {
 
@@ -1319,17 +1110,13 @@ function renderDraftResult(
 
 
     draftLink.style.display =
-      "flex";
-
-  } else {
-
-    draftLink.style.display =
-      "none";
+      "inline-flex";
 
   }
 
 
   if (
+    pdfLink &&
     result.pdfUrl
   ) {
 
@@ -1338,30 +1125,14 @@ function renderDraftResult(
 
 
     pdfLink.style.display =
-      "flex";
-
-  } else {
-
-    pdfLink.style.display =
-      "none";
+      "inline-flex";
 
   }
 
 
-  resultText.textContent =
-    result.draftName
-      ? "Dokumen " +
-        result.draftName +
-        " berhasil dibuat."
-      : "Dokumen berhasil dibuat.";
-
-
-  document
-    .getElementById(
-      "resultModal"
-    )
-    .classList
-    .add("show");
+  modal.classList.add(
+    "show"
+  );
 
 }
 
@@ -1370,14 +1141,21 @@ function renderDraftResult(
 // CLOSE MODAL
 // ============================================================
 
-function closeResult() {
+function closeResultModal() {
 
-  document
-    .getElementById(
+  const modal =
+    document.getElementById(
       "resultModal"
-    )
-    .classList
-    .remove("show");
+    );
+
+
+  if (modal) {
+
+    modal.classList.remove(
+      "show"
+    );
+
+  }
 
 }
 
@@ -1386,26 +1164,48 @@ function closeResult() {
 // LOADING
 // ============================================================
 
-function showLoading() {
+function showLoading(
+  show,
+  message = "Memproses..."
+) {
 
-  document
-    .getElementById(
+  const overlay =
+    document.getElementById(
       "loadingOverlay"
-    )
-    .classList
-    .add("show");
-
-}
+    );
 
 
-function hideLoading() {
+  if (!overlay)
+    return;
 
-  document
-    .getElementById(
-      "loadingOverlay"
-    )
-    .classList
-    .remove("show");
+
+  const text =
+    overlay.querySelector(
+      ".loading-text"
+    );
+
+
+  if (text) {
+
+    text.textContent =
+      message;
+
+  }
+
+
+  if (show) {
+
+    overlay.classList.add(
+      "show"
+    );
+
+  } else {
+
+    overlay.classList.remove(
+      "show"
+    );
+
+  }
 
 }
 
@@ -1415,7 +1215,8 @@ function hideLoading() {
 // ============================================================
 
 function showToast(
-  message
+  message,
+  type = "success"
 ) {
 
   const toast =
@@ -1424,49 +1225,49 @@ function showToast(
     );
 
 
+  if (!toast)
+    return;
+
+
   toast.textContent =
     message;
 
 
-  toast.classList
-    .add("show");
+  toast.className =
+    "toast " + type;
+
+
+  toast.classList.add(
+    "show"
+  );
 
 
   setTimeout(
-    function() {
+    function () {
 
-      toast.classList
-        .remove("show");
+      toast.classList.remove(
+        "show"
+      );
 
     },
-    4500
+    4000
   );
 
 }
 
 
 // ============================================================
-// ESCAPE ATTRIBUTE
+// ESCAPE HTML
 // ============================================================
 
-function escapeAttribute(
+function escapeHtml(
   value
 ) {
 
-  return String(
-    value || ""
-  )
+  return String(value)
     .replace(
       /&/g,
       "&amp;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
     )
     .replace(
       /</g,
@@ -1475,6 +1276,36 @@ function escapeAttribute(
     .replace(
       />/g,
       "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
     );
 
 }
+
+
+// ============================================================
+// MODAL EVENT
+// ============================================================
+
+document.addEventListener(
+  "click",
+  function (event) {
+
+    if (
+      event.target.matches(
+        "[data-close-modal]"
+      )
+    ) {
+
+      closeResultModal();
+
+    }
+
+  }
+);
