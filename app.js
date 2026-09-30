@@ -158,30 +158,34 @@ async function loadInitialData() {
     // MASTER
     // ------------------------------------------------------
 
+    const master =
+  result.master || {};
+
+
     populateSelect(
       "prodi",
-      result.master.prodi,
+      master.prodi || [],
       "Pilih Program Studi"
     );
-
-
+    
+    
     populateSelect(
       "program",
-      result.master.program,
+      master.program || [],
       "Pilih Program"
     );
-
-
+    
+    
     populateSelect(
       "jurusan",
-      result.master.jurusan,
+      master.jurusan || [],
       "Pilih Jurusan"
     );
-
-
+    
+    
     populateSelect(
       "semester",
-      result.master.semester,
+      master.semester || [],
       "Pilih Semester"
     );
 
