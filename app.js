@@ -9,8 +9,7 @@
 // ============================================================
 
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbwzqcOz3LlYdZye-XRg1FxHv1xPVm2D6KF32ZEMIRFjQjBZNCgEeTvuvtthaXl-mg/exec";
-
+  "https://script.google.com/macros/s/AKfycbwzqcOz3LlYdZye-XRg1FxHv1xPVm2D6KF32ZEMwxIRfJqjBZNCgEeTvuvtthaXl-mg/exec";
 
 // ============================================================
 // STATE
