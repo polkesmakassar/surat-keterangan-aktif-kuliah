@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Sistem Data Mahasiswa</title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+<header class="header">
+
+  <div class="header-inner">
+
+    <div class="brand">
+
+      <div class="brand-icon">
+        🎓
+      </div>
+
+      <div>
+
+        <div class="brand-title">
+          Sistem Data Mahasiswa
+        </div>
+
+        <div class="brand-subtitle">
+          Poltekkes Kemenkes Makassar
+        </div>
+
+      </div>
+
+    </div>
+
+    <a
+      href="https://poltekkesmakassar.siakadcloud.com/gate/login"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="header-badge"
+    >
+      Sistem Informasi Akademik
+    </a>
+
+  </div>
+
+</header>
+
+
+<main class="container">
+
+
+<section class="dashboard">
+
+  <div class="dashboard-card">
+
+    <div class="dashboard-label">
+      Total Data Mahasiswa
+    </div>
+
+    <div
+      class="dashboard-value"
+      id="totalData"
+    >
+      -
+    </div>
+
+  </div>
+
+
+  <div class="dashboard-card">
+
+    <div class="dashboard-label">
+      Status Sistem
+    </div>
+
+    <div
+      class="dashboard-value status-active"
+    >
+      ● Aktif
+    </div>
+
+  </div>
+
+
+  <div class="dashboard-card">
+
+    <div class="dashboard-label">
+      Dokumen
+    </div>
+
+    <div
+      class="dashboard-value dashboard-small"
+    >
+      Draft Suket
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="card-header">
+
+    <h2 class="card-title">
+      Input Data Mahasiswa
+    </h2>
+
+    <p class="card-description">
+      Lengkapi data mahasiswa untuk membuat Draft Surat Keterangan.
+    </p>
+
+  </div>
+
+
+  <div class="card-body">
+
+    <form id="mahasiswaForm">
+
+
+      <div class="form-grid">
+
+
+        <!-- NIM -->
+
+        <div class="form-group">
+
+          <label for="nim">
+
+            NIM
+
+            <span class="required">
+              *
+            </span>
+
+          </label>
+
+
+          <input
+            type="text"
+            id="nim"
+            class="nim-input"
+            placeholder="PO71XXXXXXXXXX"
+            maxlength="14"
+            autocomplete="off"
+            required
+          >
+
+
+          <div class="input-help">
+            Format: PO71 + 10 angka.
+          </div>
+
+        </div>
+
+
+
+        <!-- NAMA -->
+
+        <div class="form-group">
+
+          <label for="nama">
+            Nama Mahasiswa
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="nama"
+            placeholder="Nama lengkap mahasiswa"
+            required
+          >
+
+        </div>
+
+
+
+        <!-- TEMPAT -->
+
+        <div class="form-group">
+
+          <label for="tempat">
+            Tempat Lahir
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="text"
+            id="tempat"
+            placeholder="Contoh: Makassar"
+            required
+          >
+
+        </div>
+
+
+
+        <!-- TANGGAL -->
+
+        <div class="form-group">
+
+          <label for="tanggalLahir">
+            Tanggal Lahir
+            <span class="required">*</span>
+          </label>
+
+          <input
+            type="date"
+            id="tanggalLahir"
+            required
+          >
+
+        </div>
+
+
+
+        <!-- PRODI -->
+
+        <div class="form-group">
+
+          <label for="prodi">
+            Prodi
+            <span class="required">*</span>
+          </label>
+
+          <select
+            id="prodi"
+            required
+          >
+
+            <option value="">
+              Memuat data...
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- PROGRAM -->
+
+        <div class="form-group">
+
+          <label for="program">
+            Program
+            <span class="required">*</span>
+          </label>
+
+          <select
+            id="program"
+            required
+          >
+
+            <option value="">
+              Memuat data...
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- JURUSAN -->
+
+        <div class="form-group">
+
+          <label for="jurusan">
+            Jurusan
+            <span class="required">*</span>
+          </label>
+
+          <select
+            id="jurusan"
+            required
+          >
+
+            <option value="">
+              Memuat data...
+            </option>
+
+          </select>
+
+        </div>
+
+
+
+        <!-- SEMESTER -->
+
+        <div class="form-group">
+
+          <label for="semester">
+            Semester
+            <span class="required">*</span>
+          </label>
+
+          <select
+            id="semester"
+            required
+          >
+
+            <option value="">
+              Pilih Semester
+            </option>
+
+          </select>
+
+        </div>
+
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="resetForm()"
+        >
+          Reset
+        </button>
+
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          id="submitButton"
+        >
+          Simpan & Buat Draft Suket
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</section>
+
+
+
+<section class="card">
+
+  <div class="card-header">
+
+    <h2 class="card-title">
+      Data Mahasiswa
+    </h2>
+
+    <p class="card-description">
+      Data mahasiswa yang telah tersimpan.
+    </p>
+
+  </div>
+
+
+  <div class="card-body">
+
+
+    <div class="table-toolbar">
+
+      <div class="search-box">
+
+        <span class="search-icon">
+          🔎
+        </span>
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Cari NIM, nama, prodi, jurusan..."
+        >
+
+      </div>
+
+    </div>
+
+
+
+    <div class="table-wrapper">
+
+      <table>
+
+        <thead id="tableHead">
+        </thead>
+
+        <tbody id="tableBody">
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+
+    <div class="pagination">
+
+      <div
+        class="pagination-info"
+        id="paginationInfo"
+      >
+        -
+      </div>
+
+
+      <div class="pagination-buttons">
+
+        <button
+          class="page-btn"
+          id="prevButton"
+        >
+          ‹
+        </button>
+
+        <button
+          class="page-btn"
+          id="nextButton"
+        >
+          ›
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+
+
+<!-- =====================================================
+     MODAL HASIL DRAFT
+====================================================== -->
+
+<div
+  class="modal"
+  id="resultModal"
+>
+
+  <div class="modal-card">
+
+    <div class="success-icon">
+      ✓
+    </div>
+
+    <h2 class="modal-title">
+      Draft Suket Berhasil Dibuat
+    </h2>
+
+    <p
+      class="modal-text"
+      id="resultText"
+    >
+      Dokumen berhasil dibuat.
+    </p>
+
+
+    <div class="modal-actions">
+
+      <a
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        id="draftLink"
+        class="btn btn-primary"
+      >
+        📄 Buka Draft
+      </a>
+
+
+      <a
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        id="pdfLink"
+        class="btn btn-success"
+      >
+        ⬇ Download PDF
+      </a>
+
+
+      <button
+        class="btn btn-secondary"
+        onclick="closeResult()"
+      >
+        Tutup
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     LOADING
+====================================================== -->
+
+<div
+  class="loading-overlay"
+  id="loadingOverlay"
+>
+
+  <div class="loading-box">
+
+    <div class="spinner"></div>
+
+    <div>
+      Sedang memproses...
+    </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     TOAST
+====================================================== -->
+
+<div
+  class="toast"
+  id="toast"
+></div>
+
+
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
