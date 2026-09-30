@@ -395,7 +395,7 @@ async function submitForm(
 
   const tempatLahir =
     document
-      .getElementById("tempat")
+      .getElementById("tempatLahir")
       .value
       .trim();
 
