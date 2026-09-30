@@ -1,19 +1,13 @@
-// ============================================================
-// SUKET AKTIF KULIAH - FRONTEND
-// Poltekkes Kemenkes Makassar
-// ============================================================
+// =========================================================
+// SUKET AKTIF KULIAH
+// POLTEKKES KEMENKES MAKASSAR
+// APP.JS - VERSI OPTIMASI
+// =========================================================
 
-
-// ============================================================
-// API
-// ============================================================
 
 const API_URL =
   "https://script.google.com/macros/s/AKfycbwzqcOz3LlYdZye-XRg1FxHv1xPVm2D6KF32ZEMwxIRfJqjBZNCgEeTvuvtthaXl-mg/exec";
 
-// ============================================================
-// STATE
-// ============================================================
 
 let currentPage = 1;
 
@@ -21,10 +15,12 @@ const pageSize = 10;
 
 let currentKeyword = "";
 
+let searchTimer = null;
 
-// ============================================================
+
+// =========================================================
 // DOM READY
-// ============================================================
+// =========================================================
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -38,58 +34,60 @@ document.addEventListener(
 
     setupPagination();
 
-    // ==========================================
-    // OPTIMASI:
-    // Sebelumnya 3 request:
-    // loadMasterData()
-    // loadTotalData()
-    // loadData()
-    //
-    // Sekarang cukup 1 request:
-    // loadInitialData()
-    // ==========================================
-
     loadInitialData();
 
   }
 );
 
 
-// ============================================================
+// =========================================================
 // API REQUEST
-// ============================================================
+// =========================================================
 
 async function apiRequest(
   action,
   data = {}
 ) {
 
+  const payload = {
+
+    action,
+
+    ...data
+
+  };
+
+
   const response =
     await fetch(
       API_URL,
       {
-        method: "POST",
+
+        method:
+          "POST",
 
         headers: {
+
           "Content-Type":
             "text/plain;charset=utf-8"
+
         },
 
         body:
-          JSON.stringify({
-            action:
-              action,
+          JSON.stringify(
+            payload
+          )
 
-            ...data
-          })
       }
     );
 
 
-  if (!response.ok) {
+  if (
+    !response.ok
+  ) {
 
     throw new Error(
-      "HTTP Error " +
+      "Server mengembalikan HTTP " +
       response.status
     );
 
@@ -106,9 +104,17 @@ async function apiRequest(
     result.error
   ) {
 
-    throw new Error(
-      result.error
-    );
+    const error =
+      new Error(
+        result.error
+      );
+
+
+    error.result =
+      result;
+
+
+    throw error;
 
   }
 
@@ -118,128 +124,93 @@ async function apiRequest(
 }
 
 
-// ============================================================
-// LOAD INITIAL DATA
-// ============================================================
-// 1 REQUEST untuk:
-// - Master Prodi
-// - Master Program
-// - Master Jurusan
-// - Semester
-// - Total Data
-// - Data tabel
-// ============================================================
+// =========================================================
+// INITIAL LOAD
+// SATU REQUEST
+// =========================================================
 
 async function loadInitialData() {
 
+  showLoading(
+    true,
+    "Memuat sistem..."
+  );
+
+
   try {
-
-    showLoading(
-      true,
-      "Memuat data..."
-    );
-
 
     const result =
       await apiRequest(
         "getInitialData",
         {
-          search:
-            "",
 
-          page:
-            1,
+          search: "",
 
-          pageSize:
-            pageSize
+          page: 1,
+
+          pageSize
+
         }
       );
 
 
-    // ==========================================
-    // MASTER PRODI
-    // ==========================================
+    // ------------------------------------------------------
+    // MASTER
+    // ------------------------------------------------------
 
     populateSelect(
       "prodi",
-      result.prodi || [],
-      "Pilih Prodi"
+      result.master.prodi,
+      "Pilih Program Studi"
     );
 
 
-    // ==========================================
-    // MASTER PROGRAM
-    // ==========================================
-
     populateSelect(
       "program",
-      result.program || [],
+      result.master.program,
       "Pilih Program"
     );
 
 
-    // ==========================================
-    // MASTER JURUSAN
-    // ==========================================
-
     populateSelect(
       "jurusan",
-      result.jurusan || [],
+      result.master.jurusan,
       "Pilih Jurusan"
     );
 
 
-    // ==========================================
-    // MASTER SEMESTER
-    // ==========================================
-
     populateSelect(
       "semester",
-      result.semester || [],
+      result.master.semester,
       "Pilih Semester"
     );
 
 
-    // ==========================================
-    // TOTAL DATA
-    // ==========================================
+    // ------------------------------------------------------
+    // TOTAL
+    // ------------------------------------------------------
 
-    const totalElement =
-      document.getElementById(
-        "totalData"
-      );
-
-
-    if (totalElement) {
-
-      totalElement.textContent =
-        result.total || 0;
-
-    }
+    updateTotalData(
+      result.total
+    );
 
 
-    // ==========================================
+    // ------------------------------------------------------
     // PAGE
-    // ==========================================
+    // ------------------------------------------------------
 
     currentPage =
-      Number(
-        result.page || 1
-      );
+      result.page || 1;
 
 
-    // ==========================================
+    // ------------------------------------------------------
     // TABLE
-    // ==========================================
+    // ------------------------------------------------------
 
     renderTable(
       result
     );
 
-
-    // ==========================================
-    // PAGINATION
-    // ==========================================
 
     updatePagination(
       result
@@ -250,14 +221,13 @@ async function loadInitialData() {
   catch (error) {
 
     console.error(
-      "Gagal memuat data awal:",
       error
     );
 
 
     showToast(
       error.message ||
-      "Data awal gagal dimuat.",
+        "Gagal memuat data.",
       "error"
     );
 
@@ -274,9 +244,9 @@ async function loadInitialData() {
 }
 
 
-// ============================================================
+// =========================================================
 // NIM
-// ============================================================
+// =========================================================
 
 function setupNIM() {
 
@@ -298,40 +268,42 @@ function setupNIM() {
     function () {
 
       let value =
-        this.value
-          .toUpperCase();
+        input.value
+          .toUpperCase()
+          .replace(
+            /[^A-Z0-9]/g,
+            ""
+          );
 
-
-      // Hilangkan semua karakter
-      // selain PO71 dan angka
 
       if (
-        !value.startsWith("PO71")
+        !value.startsWith(
+          "PO71"
+        )
       ) {
 
         value =
-          "PO71" +
-          value.replace(
-            /[^0-9]/g,
-            ""
-          );
+          "PO71";
 
       }
 
 
-      const digits =
+      value =
+        "PO71" +
         value
           .substring(4)
           .replace(
             /[^0-9]/g,
             ""
           )
-          .substring(0, 10);
+          .slice(
+            0,
+            10
+          );
 
 
-      this.value =
-        "PO71" +
-        digits;
+      input.value =
+        value;
 
     }
   );
@@ -339,9 +311,9 @@ function setupNIM() {
 }
 
 
-// ============================================================
+// =========================================================
 // FORM
-// ============================================================
+// =========================================================
 
 function setupForm() {
 
@@ -362,9 +334,9 @@ function setupForm() {
 }
 
 
-// ============================================================
-// SUBMIT FORM
-// ============================================================
+// =========================================================
+// SUBMIT
+// =========================================================
 
 async function submitForm(
   event
@@ -373,13 +345,11 @@ async function submitForm(
   event.preventDefault();
 
 
-  const form =
-    event.target;
-
-
   const nim =
     document
-      .getElementById("nim")
+      .getElementById(
+        "nim"
+      )
       .value
       .trim()
       .toUpperCase();
@@ -387,51 +357,75 @@ async function submitForm(
 
   const nama =
     document
-      .getElementById("nama")
+      .getElementById(
+        "nama"
+      )
       .value
       .trim();
 
 
+  // =======================================================
+  // PERBAIKAN BUG
+  // HTML MENGGUNAKAN id="tempat"
+  // =======================================================
+
   const tempatLahir =
     document
-      .getElementById("tempatLahir")
+      .getElementById(
+        "tempat"
+      )
       .value
       .trim();
 
 
   const tanggalLahir =
     document
-      .getElementById("tanggalLahir")
-      .value;
+      .getElementById(
+        "tanggalLahir"
+      )
+      .value
+      .trim();
 
 
   const prodi =
     document
-      .getElementById("prodi")
-      .value;
+      .getElementById(
+        "prodi"
+      )
+      .value
+      .trim();
 
 
   const program =
     document
-      .getElementById("program")
-      .value;
+      .getElementById(
+        "program"
+      )
+      .value
+      .trim();
 
 
   const jurusan =
     document
-      .getElementById("jurusan")
-      .value;
+      .getElementById(
+        "jurusan"
+      )
+      .value
+      .trim();
 
 
   const semester =
     document
-      .getElementById("semester")
-      .value;
+      .getElementById(
+        "semester"
+      )
+      .value
+      .trim();
 
 
-  // ----------------------------------------------------------
-  // VALIDASI NIM
-  // ----------------------------------------------------------
+  // =======================================================
+  // VALIDASI
+  // =======================================================
 
   if (
     !/^PO71[0-9]{10}$/.test(
@@ -440,7 +434,7 @@ async function submitForm(
   ) {
 
     showToast(
-      "NIM harus PO71 + 10 digit angka.",
+      "NIM harus berformat PO71 + 10 digit angka.",
       "error"
     );
 
@@ -448,10 +442,6 @@ async function submitForm(
 
   }
 
-
-  // ----------------------------------------------------------
-  // VALIDASI
-  // ----------------------------------------------------------
 
   if (
     !nama ||
@@ -464,7 +454,7 @@ async function submitForm(
   ) {
 
     showToast(
-      "Semua data wajib diisi.",
+      "Semua data mahasiswa wajib diisi.",
       "error"
     );
 
@@ -472,10 +462,6 @@ async function submitForm(
 
   }
 
-
-  // ----------------------------------------------------------
-  // LOADING
-  // ----------------------------------------------------------
 
   showLoading(
     true,
@@ -489,31 +475,25 @@ async function submitForm(
       await apiRequest(
         "saveMahasiswa",
         {
+
           data: {
 
-            nim:
-              nim,
+            nim,
 
-            nama:
-              nama,
+            nama,
 
             tempat:
               tempatLahir,
 
-            tanggalLahir:
-              tanggalLahir,
+            tanggalLahir,
 
-            prodi:
-              prodi,
+            prodi,
 
-            program:
-              program,
+            program,
 
-            jurusan:
-              jurusan,
+            jurusan,
 
-            semester:
-              semester
+            semester
 
           }
 
@@ -521,16 +501,18 @@ async function submitForm(
       );
 
 
-    // --------------------------------------------------------
+    // =====================================================
     // DUPLIKAT
-    // --------------------------------------------------------
+    // =====================================================
 
     if (
+      result &&
       result.duplicate
     ) {
 
       showToast(
-        result.message,
+        result.error ||
+          "Data sudah terdaftar.",
         "error"
       );
 
@@ -539,11 +521,12 @@ async function submitForm(
     }
 
 
-    // --------------------------------------------------------
+    // =====================================================
     // BERHASIL
-    // --------------------------------------------------------
+    // =====================================================
 
     if (
+      result &&
       result.success
     ) {
 
@@ -552,7 +535,17 @@ async function submitForm(
       );
 
 
-      form.reset();
+      const form =
+        document.getElementById(
+          "mahasiswaForm"
+        );
+
+
+      if (form) {
+
+        form.reset();
+
+      }
 
 
       const nimInput =
@@ -569,16 +562,23 @@ async function submitForm(
       }
 
 
-      // ========================================
-      // REFRESH TOTAL + TABLE
-      // ========================================
-
-      await loadTotalData();
+      // ---------------------------------------------------
+      // HANYA 1 REQUEST
+      // loadData() sekarang sekaligus memperbarui total.
+      // ---------------------------------------------------
 
       await loadData();
 
     }
 
+    else {
+
+      throw new Error(
+        result?.error ||
+          "Data gagal disimpan."
+      );
+
+    }
 
   }
 
@@ -591,10 +591,9 @@ async function submitForm(
 
     showToast(
       error.message ||
-      "Terjadi kesalahan.",
+        "Terjadi kesalahan saat menyimpan data.",
       "error"
     );
-
 
   }
 
@@ -609,78 +608,13 @@ async function submitForm(
 }
 
 
-// ============================================================
-// LOAD MASTER DATA
-// ============================================================
-// Tetap dipertahankan untuk kompatibilitas.
-// Tidak dipanggil saat initial loading.
-// ============================================================
-
-async function loadMasterData() {
-
-  try {
-
-    const data =
-      await apiRequest(
-        "getMasterOptions"
-      );
-
-
-    populateSelect(
-      "prodi",
-      data.prodi || [],
-      "Pilih Prodi"
-    );
-
-
-    populateSelect(
-      "program",
-      data.program || [],
-      "Pilih Program"
-    );
-
-
-    populateSelect(
-      "jurusan",
-      data.jurusan || [],
-      "Pilih Jurusan"
-    );
-
-
-    populateSelect(
-      "semester",
-      data.semester || [],
-      "Pilih Semester"
-    );
-
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Gagal memuat master:",
-      error
-    );
-
-
-    showToast(
-      "Master data gagal dimuat.",
-      "error"
-    );
-
-  }
-
-}
-
-
-// ============================================================
+// =========================================================
 // POPULATE SELECT
-// ============================================================
+// =========================================================
 
 function populateSelect(
   elementId,
-  items,
+  options,
   placeholder
 ) {
 
@@ -711,175 +645,199 @@ function populateSelect(
     placeholder;
 
 
+  defaultOption.disabled =
+    false;
+
+
+  defaultOption.selected =
+    true;
+
+
   select.appendChild(
     defaultOption
   );
 
 
-  if (
-    !Array.isArray(items)
-  ) return;
+  (options || [])
+    .forEach(
+      function(value) {
+
+        const option =
+          document.createElement(
+            "option"
+          );
 
 
-  items.forEach(
-    function (item) {
+        option.value =
+          value;
 
-      const option =
-        document.createElement(
-          "option"
+
+        option.textContent =
+          value;
+
+
+        select.appendChild(
+          option
         );
 
-
-      option.value =
-        item;
-
-
-      option.textContent =
-        item;
-
-
-      select.appendChild(
-        option
-      );
-
-    }
-  );
-
-}
-
-
-// ============================================================
-// LOAD TOTAL
-// ============================================================
-
-async function loadTotalData() {
-
-  try {
-
-    const result =
-      await apiRequest(
-        "getTotalData"
-      );
-
-
-    const element =
-      document.getElementById(
-        "totalData"
-      );
-
-
-    if (element) {
-
-      element.textContent =
-        result.total || 0;
-
-    }
-
-  }
-
-  catch (error) {
-
-    console.error(
-      error
+      }
     );
 
-  }
-
 }
 
 
-// ============================================================
+// =========================================================
 // LOAD DATA
-// ============================================================
+// =========================================================
 
 async function loadData() {
 
-  try {
+  const result =
+    await apiRequest(
+      "getMahasiswaData",
+      {
 
-    const result =
-      await apiRequest(
-        "getMahasiswaData",
-        {
-          search:
-            currentKeyword,
+        search:
+          currentKeyword,
 
-          page:
-            currentPage,
+        page:
+          currentPage,
 
-          pageSize:
-            pageSize
+        pageSize
 
-        }
-      );
-
-
-    renderTable(
-      result
+      }
     );
 
 
-    updatePagination(
-      result
-    );
+  // =======================================================
+  // SEKALIGUS UPDATE TOTAL
+  // Tidak perlu request getTotalData lagi.
+  // =======================================================
+
+  updateTotalData(
+    result.total
+  );
 
 
-  }
-
-  catch (error) {
-
-    console.error(
-      error
-    );
+  currentPage =
+    result.page || 1;
 
 
-    showToast(
-      "Data mahasiswa gagal dimuat.",
-      "error"
-    );
+  renderTable(
+    result
+  );
 
-  }
+
+  updatePagination(
+    result
+  );
+
+
+  return result;
 
 }
 
 
-// ============================================================
+// =========================================================
+// UPDATE TOTAL
+// =========================================================
+
+function updateTotalData(
+  total
+) {
+
+  const element =
+    document.getElementById(
+      "totalData"
+    );
+
+
+  if (!element) return;
+
+
+  element.textContent =
+    Number(
+      total || 0
+    ).toLocaleString(
+      "id-ID"
+    );
+
+}
+
+
+// =========================================================
+// LOAD TOTAL
+// KOMPATIBILITAS
+// =========================================================
+
+async function loadTotalData() {
+
+  const result =
+    await apiRequest(
+      "getTotalData"
+    );
+
+
+  updateTotalData(
+    result.total
+  );
+
+
+  return result.total;
+
+}
+
+
+// =========================================================
 // RENDER TABLE
-// ============================================================
+// =========================================================
 
 function renderTable(
   result
 ) {
 
-  const head =
+  const tableHead =
     document.getElementById(
       "tableHead"
     );
 
 
-  const body =
+  const tableBody =
     document.getElementById(
       "tableBody"
     );
 
 
-  if (!head || !body)
+  if (
+    !tableHead ||
+    !tableBody
+  ) {
+
     return;
 
+  }
 
-  head.innerHTML =
+
+  tableHead.innerHTML =
     "";
 
 
-  body.innerHTML =
+  tableBody.innerHTML =
     "";
 
 
-  const headers =
-    result.headers || [];
+  // =======================================================
+  // HEADER
+  // =======================================================
+
+  const headerRow =
+    document.createElement(
+      "tr"
+    );
 
 
-  headers.forEach(
-    function (header) {
+  result.headers.forEach(
+    function(header) {
 
       const th =
         document.createElement(
@@ -891,7 +849,7 @@ function renderTable(
         header;
 
 
-      head.appendChild(
+      headerRow.appendChild(
         th
       );
 
@@ -899,45 +857,54 @@ function renderTable(
   );
 
 
-  const rows =
-    result.rows || [];
+  tableHead.appendChild(
+    headerRow
+  );
 
+
+  // =======================================================
+  // DATA KOSONG
+  // =======================================================
 
   if (
-    rows.length === 0
+    !result.rows ||
+    result.rows.length === 0
   ) {
 
-    const tr =
+    const row =
       document.createElement(
         "tr"
       );
 
 
-    const td =
+    const cell =
       document.createElement(
         "td"
       );
 
 
-    td.colSpan =
-      headers.length || 1;
+    cell.colSpan =
+      result.headers.length ||
+      1;
 
 
-    td.textContent =
-      "Belum ada data.";
+    cell.className =
+      "table-loading";
 
 
-    td.style.textAlign =
-      "center";
+    cell.textContent =
+      currentKeyword
+        ? "Data tidak ditemukan."
+        : "Belum ada data.";
 
 
-    tr.appendChild(
-      td
+    row.appendChild(
+      cell
     );
 
 
-    body.appendChild(
-      tr
+    tableBody.appendChild(
+      row
     );
 
 
@@ -946,8 +913,12 @@ function renderTable(
   }
 
 
-  rows.forEach(
-    function (row) {
+  // =======================================================
+  // DATA
+  // =======================================================
+
+  result.rows.forEach(
+    function(rowData) {
 
       const tr =
         document.createElement(
@@ -955,11 +926,8 @@ function renderTable(
         );
 
 
-      row.forEach(
-        function (
-          value,
-          index
-        ) {
+      result.headers.forEach(
+        function(header, index) {
 
           const td =
             document.createElement(
@@ -967,9 +935,12 @@ function renderTable(
             );
 
 
+          const value =
+            rowData[index] || "";
+
+
           if (
-            headers[index] ===
-            "DRAFT SUKET" &&
+            header === "DRAFT SUKET" &&
             value
           ) {
 
@@ -983,7 +954,7 @@ function renderTable(
           else {
 
             td.textContent =
-              value || "-";
+              value;
 
           }
 
@@ -996,7 +967,7 @@ function renderTable(
       );
 
 
-      body.appendChild(
+      tableBody.appendChild(
         tr
       );
 
@@ -1006,9 +977,9 @@ function renderTable(
 }
 
 
-// ============================================================
-// CREATE DRAFT BUTTON
-// ============================================================
+// =========================================================
+// DRAFT BUTTON
+// =========================================================
 
 function createDraftButton(
   url
@@ -1080,37 +1051,60 @@ function createDraftButton(
 }
 
 
-// ============================================================
+// =========================================================
 // PAGINATION
-// ============================================================
+// =========================================================
 
 function setupPagination() {
 
-  const prev =
+  const prevButton =
     document.getElementById(
       "prevButton"
     );
 
 
-  const next =
+  const nextButton =
     document.getElementById(
       "nextButton"
     );
 
 
-  if (prev) {
+  if (prevButton) {
 
-    prev.addEventListener(
+    prevButton.addEventListener(
       "click",
-      function () {
+      async function () {
 
         if (
-          currentPage > 1
+          currentPage <= 1
         ) {
 
-          currentPage--;
+          return;
 
-          loadData();
+        }
+
+
+        currentPage--;
+
+
+        try {
+
+          await loadData();
+
+        }
+
+        catch (error) {
+
+          console.error(
+            error
+          );
+
+
+          showToast(
+            error.message ||
+              "Gagal memuat data.",
+            "error"
+          );
 
         }
 
@@ -1120,15 +1114,38 @@ function setupPagination() {
   }
 
 
-  if (next) {
+  if (nextButton) {
 
-    next.addEventListener(
+    nextButton.addEventListener(
       "click",
-      function () {
+      async function () {
 
         currentPage++;
 
-        loadData();
+
+        try {
+
+          await loadData();
+
+        }
+
+        catch (error) {
+
+          currentPage--;
+
+
+          console.error(
+            error
+          );
+
+
+          showToast(
+            error.message ||
+              "Gagal memuat data.",
+            "error"
+          );
+
+        }
 
       }
     );
@@ -1138,73 +1155,75 @@ function setupPagination() {
 }
 
 
-// ============================================================
+// =========================================================
 // UPDATE PAGINATION
-// ============================================================
+// =========================================================
 
 function updatePagination(
   result
 ) {
 
-  const prev =
+  const prevButton =
     document.getElementById(
       "prevButton"
     );
 
 
-  const next =
+  const nextButton =
     document.getElementById(
       "nextButton"
     );
 
 
-  const info =
+  const paginationInfo =
     document.getElementById(
       "paginationInfo"
     );
 
 
+  const page =
+    result.page || 1;
+
+
   const totalPages =
-    Number(
-      result.totalPages || 0
-    );
+    result.totalPages || 1;
 
 
-  if (prev) {
+  currentPage =
+    page;
 
-    prev.disabled =
-      currentPage <= 1;
+
+  if (prevButton) {
+
+    prevButton.disabled =
+      page <= 1;
 
   }
 
 
-  if (next) {
+  if (nextButton) {
 
-    next.disabled =
-      totalPages === 0 ||
-      currentPage >=
+    nextButton.disabled =
+      page >= totalPages;
+
+  }
+
+
+  if (paginationInfo) {
+
+    paginationInfo.textContent =
+      page +
+      " / " +
       totalPages;
-
-  }
-
-
-  if (info) {
-
-    info.textContent =
-      totalPages === 0
-        ? "0 / 0"
-        : currentPage +
-          " / " +
-          totalPages;
 
   }
 
 }
 
 
-// ============================================================
+// =========================================================
 // SEARCH
-// ============================================================
+// =========================================================
 
 function setupSearch() {
 
@@ -1215,9 +1234,6 @@ function setupSearch() {
 
 
   if (!input) return;
-
-
-  let searchTimer;
 
 
   input.addEventListener(
@@ -1231,17 +1247,37 @@ function setupSearch() {
 
       searchTimer =
         setTimeout(
-          function () {
+          async function () {
 
             currentKeyword =
-              input.value.trim();
+              input.value
+                .trim();
 
 
             currentPage =
               1;
 
 
-            loadData();
+            try {
+
+              await loadData();
+
+            }
+
+            catch (error) {
+
+              console.error(
+                error
+              );
+
+
+              showToast(
+                error.message ||
+                  "Gagal melakukan pencarian.",
+                "error"
+              );
+
+            }
 
           },
           300
@@ -1253,9 +1289,9 @@ function setupSearch() {
 }
 
 
-// ============================================================
+// =========================================================
 // RESULT MODAL
-// ============================================================
+// =========================================================
 
 function showResultModal(
   result
@@ -1267,7 +1303,7 @@ function showResultModal(
     );
 
 
-  const text =
+  const resultText =
     document.getElementById(
       "resultText"
     );
@@ -1285,45 +1321,30 @@ function showResultModal(
     );
 
 
-  if (!modal)
-    return;
+  if (!modal) return;
 
 
-  if (text) {
+  if (resultText) {
 
-    text.textContent =
+    resultText.textContent =
       result.message ||
-      "Data berhasil disimpan.";
+      "Surat berhasil dibuat.";
 
   }
 
 
-  if (
-    draftLink &&
-    result.draftUrl
-  ) {
+  if (draftLink) {
 
     draftLink.href =
-      result.draftUrl;
-
-
-    draftLink.style.display =
-      "inline-flex";
+      result.draftUrl || "#";
 
   }
 
 
-  if (
-    pdfLink &&
-    result.pdfUrl
-  ) {
+  if (pdfLink) {
 
     pdfLink.href =
-      result.pdfUrl;
-
-
-    pdfLink.style.display =
-      "inline-flex";
+      result.pdfUrl || "#";
 
   }
 
@@ -1335,9 +1356,9 @@ function showResultModal(
 }
 
 
-// ============================================================
+// =========================================================
 // CLOSE MODAL
-// ============================================================
+// =========================================================
 
 function closeResultModal() {
 
@@ -1347,24 +1368,49 @@ function closeResultModal() {
     );
 
 
-  if (modal) {
+  if (!modal) return;
 
-    modal.classList.remove(
-      "show"
-    );
 
-  }
+  modal.classList.remove(
+    "show"
+  );
 
 }
 
 
-// ============================================================
+// =========================================================
+// MODAL EVENTS
+// =========================================================
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    const closeButton =
+      event.target.closest(
+        "[data-close-modal]"
+      );
+
+
+    if (
+      closeButton
+    ) {
+
+      closeResultModal();
+
+    }
+
+  }
+);
+
+
+// =========================================================
 // LOADING
-// ============================================================
+// =========================================================
 
 function showLoading(
   show,
-  message = "Memproses..."
+  message = ""
 ) {
 
   const overlay =
@@ -1373,8 +1419,7 @@ function showLoading(
     );
 
 
-  if (!overlay)
-    return;
+  if (!overlay) return;
 
 
   const text =
@@ -1391,32 +1436,24 @@ function showLoading(
   }
 
 
-  if (show) {
-
-    overlay.classList.add(
-      "show"
-    );
-
-  }
-
-  else {
-
-    overlay.classList.remove(
-      "show"
-    );
-
-  }
+  overlay.classList.toggle(
+    "show",
+    Boolean(show)
+  );
 
 }
 
 
-// ============================================================
+// =========================================================
 // TOAST
-// ============================================================
+// =========================================================
+
+let toastTimer = null;
+
 
 function showToast(
   message,
-  type = "success"
+  type = ""
 ) {
 
   const toast =
@@ -1425,8 +1462,12 @@ function showToast(
     );
 
 
-  if (!toast)
-    return;
+  if (!toast) return;
+
+
+  clearTimeout(
+    toastTimer
+  );
 
 
   toast.textContent =
@@ -1434,38 +1475,55 @@ function showToast(
 
 
   toast.className =
-    "toast " +
-    type;
+    "toast";
 
 
-  toast.classList.add(
-    "show"
-  );
+  if (type) {
+
+    toast.classList.add(
+      type
+    );
+
+  }
 
 
-  setTimeout(
+  requestAnimationFrame(
     function () {
 
-      toast.classList.remove(
+      toast.classList.add(
         "show"
       );
 
-    },
-    4000
+    }
   );
+
+
+  toastTimer =
+    setTimeout(
+      function () {
+
+        toast.classList.remove(
+          "show"
+        );
+
+      },
+      4000
+    );
 
 }
 
 
-// ============================================================
+// =========================================================
 // ESCAPE HTML
-// ============================================================
+// =========================================================
 
 function escapeHtml(
   value
 ) {
 
-  return String(value)
+  return String(
+    value || ""
+  )
     .replace(
       /&/g,
       "&amp;"
@@ -1488,25 +1546,3 @@ function escapeHtml(
     );
 
 }
-
-
-// ============================================================
-// MODAL EVENT
-// ============================================================
-
-document.addEventListener(
-  "click",
-  function (event) {
-
-    if (
-      event.target.matches(
-        "[data-close-modal]"
-      )
-    ) {
-
-      closeResultModal();
-
-    }
-
-  }
-);
