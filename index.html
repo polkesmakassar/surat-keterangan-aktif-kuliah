@@ -2,7 +2,6 @@
 <html lang="id">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -10,545 +9,850 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Sistem Data Mahasiswa</title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
+  <meta
+    name="description"
+    content="Sistem Data Mahasiswa - Surat Keterangan Aktif Kuliah Poltekkes Kemenkes Makassar"
   >
 
+  <title>
+    Sistem Data Mahasiswa | Poltekkes Kemenkes Makassar
+  </title>
+
+  <link rel="stylesheet" href="style.css">
 </head>
+
 
 <body>
 
-<header class="header">
 
-  <div class="header-inner">
+  <!-- =====================================================
+       HEADER
+       ===================================================== -->
 
-    <div class="brand">
+  <header class="main-header">
 
-      <div class="brand-icon">
-        🎓
-      </div>
+    <div class="header-glow header-glow-one"></div>
+    <div class="header-glow header-glow-two"></div>
 
-      <div>
+    <div class="container header-container">
 
-        <div class="brand-title">
-          Sistem Data Mahasiswa
+      <div class="brand-wrapper">
+
+        <div class="brand-icon">
+          <span>PKM</span>
         </div>
 
-        <div class="brand-subtitle">
-          Poltekkes Kemenkes Makassar
+        <div class="brand-text">
+
+          <div class="brand-institution">
+            POLTEKKES KEMENKES MAKASSAR
+          </div>
+
+          <h1>
+            Sistem Data Mahasiswa
+          </h1>
+
+          <p>
+            Pengelolaan Surat Keterangan Aktif Kuliah
+          </p>
+
         </div>
+
+      </div>
+
+
+      <div class="header-right">
+
+        <div class="system-status">
+          <span class="status-dot"></span>
+          <span>Sistem Online</span>
+        </div>
+
+        <a
+          href="https://poltekkesmakassar.siakadcloud.com/gate/login"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="siakad-button"
+        >
+          <span class="siakad-icon">↗</span>
+          SIAKAD
+        </a>
 
       </div>
 
     </div>
 
-    <a
-      href="https://poltekkesmakassar.siakadcloud.com/gate/login"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="header-badge"
-    >
-      Sistem Informasi Akademik
-    </a>
-
-  </div>
-
-</header>
-
-
-<main class="container">
-
-
-<section class="dashboard">
-
-  <div class="dashboard-card">
-
-    <div class="dashboard-label">
-      Total Data Mahasiswa
-    </div>
-
-    <div
-      class="dashboard-value"
-      id="totalData"
-    >
-      -
-    </div>
-
-  </div>
-
-
-  <div class="dashboard-card">
-
-    <div class="dashboard-label">
-      Status Sistem
-    </div>
-
-    <div
-      class="dashboard-value status-active"
-    >
-      ● Aktif
-    </div>
-
-  </div>
-
-
-  <div class="dashboard-card">
-
-    <div class="dashboard-label">
-      Dokumen
-    </div>
-
-    <div
-      class="dashboard-value dashboard-small"
-    >
-      Draft Suket
-    </div>
-
-  </div>
-
-</section>
+  </header>
 
 
 
-<section class="card">
+  <!-- =====================================================
+       MAIN
+       ===================================================== -->
 
-  <div class="card-header">
+  <main>
 
-    <h2 class="card-title">
-      Input Data Mahasiswa
-    </h2>
-
-    <p class="card-description">
-      Lengkapi data mahasiswa untuk membuat Draft Surat Keterangan.
-    </p>
-
-  </div>
+    <div class="container">
 
 
-  <div class="card-body">
+      <!-- =================================================
+           PAGE INTRO
+           ================================================= -->
 
-    <form id="mahasiswaForm">
+      <section class="page-intro">
+
+        <div>
+
+          <span class="section-kicker">
+            SURAT KETERANGAN AKTIF KULIAH
+          </span>
+
+          <h2>
+            Data Mahasiswa
+          </h2>
+
+          <p>
+            Kelola data mahasiswa dan buat Surat Keterangan
+            Aktif Kuliah secara terintegrasi.
+          </p>
+
+        </div>
+
+      </section>
 
 
-      <div class="form-grid">
+
+      <!-- =================================================
+           DASHBOARD
+           ================================================= -->
+
+      <section class="dashboard-grid">
 
 
-        <!-- NIM -->
+        <!-- TOTAL DATA -->
 
-        <div class="form-group">
+        <div class="dashboard-card">
 
-          <label for="nim">
+          <div class="dashboard-icon blue">
+            <span>01</span>
+          </div>
 
-            NIM
+          <div class="dashboard-content">
 
-            <span class="required">
-              *
+            <span class="dashboard-label">
+              TOTAL DATA
             </span>
 
-          </label>
+            <strong id="totalData">
+              0
+            </strong>
+
+            <span class="dashboard-description">
+              Mahasiswa terdaftar
+            </span>
+
+          </div>
+
+        </div>
 
 
-          <input
-            type="text"
-            id="nim"
-            class="nim-input"
-            placeholder="PO71XXXXXXXXXX"
-            maxlength="14"
-            autocomplete="off"
-            required
-          >
+        <!-- STATUS -->
+
+        <div class="dashboard-card">
+
+          <div class="dashboard-icon green">
+            <span>✓</span>
+          </div>
+
+          <div class="dashboard-content">
+
+            <span class="dashboard-label">
+              STATUS SISTEM
+            </span>
+
+            <strong class="status-active">
+              Aktif
+            </strong>
+
+            <span class="dashboard-description">
+              Layanan dapat digunakan
+            </span>
+
+          </div>
+
+        </div>
 
 
-          <div class="input-help">
-            Format: PO71 + 10 angka.
+        <!-- DOKUMEN -->
+
+        <div class="dashboard-card">
+
+          <div class="dashboard-icon gold">
+            <span>PDF</span>
+          </div>
+
+          <div class="dashboard-content">
+
+            <span class="dashboard-label">
+              DOKUMEN
+            </span>
+
+            <strong>
+              Draft & PDF
+            </strong>
+
+            <span class="dashboard-description">
+              Terintegrasi Google Drive
+            </span>
+
+          </div>
+
+        </div>
+
+
+      </section>
+
+
+
+      <!-- =================================================
+           FORM CARD
+           ================================================= -->
+
+      <section class="content-card">
+
+
+        <div class="card-header">
+
+          <div>
+
+            <span class="card-kicker">
+              FORMULIR
+            </span>
+
+            <h2>
+              Data Mahasiswa
+            </h2>
+
+            <p>
+              Lengkapi data berikut untuk membuat
+              Surat Keterangan Aktif Kuliah.
+            </p>
+
+          </div>
+
+          <div class="card-number">
+            01
           </div>
 
         </div>
 
 
 
-        <!-- NAMA -->
+        <form
+          id="mahasiswaForm"
+          autocomplete="off"
+        >
 
-        <div class="form-group">
 
-          <label for="nama">
-            Nama Mahasiswa
-            <span class="required">*</span>
-          </label>
+          <div class="form-section-title">
+            <span></span>
+            Identitas Mahasiswa
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <!-- NIM -->
+
+            <div class="form-group">
+
+              <label for="nim">
+                NIM
+                <span class="required">*</span>
+              </label>
+
+              <div class="input-prefix-wrapper">
+
+                <input
+                  type="text"
+                  id="nim"
+                  name="nim"
+                  maxlength="14"
+                  placeholder="PO71XXXXXXXXXX"
+                  required
+                >
+
+              </div>
+
+              <small>
+                Format NIM: PO71 + 10 digit angka.
+              </small>
+
+            </div>
+
+
+            <!-- NAMA -->
+
+            <div class="form-group">
+
+              <label for="nama">
+                Nama Mahasiswa
+                <span class="required">*</span>
+              </label>
+
+              <input
+                type="text"
+                id="nama"
+                name="nama"
+                placeholder="Masukkan nama lengkap"
+                required
+              >
+
+            </div>
+
+
+            <!-- TEMPAT LAHIR -->
+
+            <div class="form-group">
+
+              <label for="tempat">
+                Tempat Lahir
+                <span class="required">*</span>
+              </label>
+
+              <input
+                type="text"
+                id="tempat"
+                name="tempat"
+                placeholder="Masukkan tempat lahir"
+                required
+              >
+
+            </div>
+
+
+            <!-- TANGGAL LAHIR -->
+
+            <div class="form-group">
+
+              <label for="tanggalLahir">
+                Tanggal Lahir
+                <span class="required">*</span>
+              </label>
+
+              <input
+                type="date"
+                id="tanggalLahir"
+                name="tanggalLahir"
+                required
+              >
+
+            </div>
+
+
+          </div>
+
+
+
+          <div class="form-section-title form-section-second">
+            <span></span>
+            Data Akademik
+          </div>
+
+
+          <div class="form-grid">
+
+
+            <!-- PRODI -->
+
+            <div class="form-group">
+
+              <label for="prodi">
+                Program Studi
+                <span class="required">*</span>
+              </label>
+
+              <select
+                id="prodi"
+                name="prodi"
+                required
+              >
+
+                <option value="">
+                  Memuat data...
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- PROGRAM -->
+
+            <div class="form-group">
+
+              <label for="program">
+                Program Pendidikan
+                <span class="required">*</span>
+              </label>
+
+              <select
+                id="program"
+                name="program"
+                required
+              >
+
+                <option value="">
+                  Memuat data...
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- JURUSAN -->
+
+            <div class="form-group">
+
+              <label for="jurusan">
+                Jurusan
+                <span class="required">*</span>
+              </label>
+
+              <select
+                id="jurusan"
+                name="jurusan"
+                required
+              >
+
+                <option value="">
+                  Memuat data...
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- SEMESTER -->
+
+            <div class="form-group">
+
+              <label for="semester">
+                Semester
+                <span class="required">*</span>
+              </label>
+
+              <select
+                id="semester"
+                name="semester"
+                required
+              >
+
+                <option value="">
+                  Memuat data...
+                </option>
+
+              </select>
+
+            </div>
+
+
+          </div>
+
+
+
+          <!-- FORM ACTION -->
+
+          <div class="form-footer">
+
+            <div class="form-note">
+
+              <span class="note-icon">
+                i
+              </span>
+
+              <span>
+                Pastikan data yang dimasukkan
+                sudah benar sebelum disimpan.
+              </span>
+
+            </div>
+
+
+            <button
+              type="submit"
+              class="submit-button"
+            >
+
+              <span class="submit-icon">
+                ✓
+              </span>
+
+              <span>
+                Simpan & Buat Draft
+              </span>
+
+            </button>
+
+          </div>
+
+
+        </form>
+
+      </section>
+
+
+
+      <!-- =================================================
+           DATA TABLE
+           ================================================= -->
+
+      <section class="content-card">
+
+
+        <div class="card-header table-card-header">
+
+          <div>
+
+            <span class="card-kicker">
+              DATABASE
+            </span>
+
+            <h2>
+              Data Mahasiswa
+            </h2>
+
+            <p>
+              Daftar mahasiswa yang telah terdaftar
+              dalam sistem.
+            </p>
+
+          </div>
+
+          <div class="database-badge">
+            DATA TERINTEGRASI
+          </div>
+
+        </div>
+
+
+
+        <!-- SEARCH -->
+
+        <div class="search-wrapper">
+
+          <div class="search-icon">
+            ⌕
+          </div>
 
           <input
-            type="text"
-            id="nama"
-            placeholder="Nama lengkap mahasiswa"
-            required
+            type="search"
+            id="searchInput"
+            placeholder="Cari NIM, nama, prodi, jurusan..."
+            autocomplete="off"
           >
 
         </div>
 
 
 
-        <!-- TEMPAT -->
+        <!-- TABLE -->
 
-        <div class="form-group">
+        <div class="table-wrapper">
 
-          <label for="tempat">
-            Tempat Lahir
-            <span class="required">*</span>
-          </label>
+          <table>
 
-          <input
-            type="text"
-            id="tempat"
-            placeholder="Contoh: Makassar"
-            required
-          >
+            <thead>
 
-        </div>
+              <tr id="tableHead">
+              </tr>
 
+            </thead>
 
+            <tbody id="tableBody">
 
-        <!-- TANGGAL -->
+              <tr>
 
-        <div class="form-group">
+                <td
+                  colspan="7"
+                  class="table-loading"
+                >
+                  Memuat data...
+                </td>
 
-          <label for="tanggalLahir">
-            Tanggal Lahir
-            <span class="required">*</span>
-          </label>
+              </tr>
 
-          <input
-            type="date"
-            id="tanggalLahir"
-            required
-          >
+            </tbody>
+
+          </table>
 
         </div>
 
 
 
-        <!-- PRODI -->
+        <!-- PAGINATION -->
 
-        <div class="form-group">
+        <div class="pagination-wrapper">
 
-          <label for="prodi">
-            Prodi
-            <span class="required">*</span>
-          </label>
-
-          <select
-            id="prodi"
-            required
+          <button
+            type="button"
+            id="prevButton"
+            class="pagination-button"
           >
+            ← Sebelumnya
+          </button>
 
-            <option value="">
-              Memuat data...
-            </option>
 
-          </select>
+          <div
+            id="paginationInfo"
+            class="pagination-info"
+          >
+            0 / 0
+          </div>
+
+
+          <button
+            type="button"
+            id="nextButton"
+            class="pagination-button"
+          >
+            Selanjutnya →
+          </button>
 
         </div>
 
 
+      </section>
 
-        <!-- PROGRAM -->
-
-        <div class="form-group">
-
-          <label for="program">
-            Program
-            <span class="required">*</span>
-          </label>
-
-          <select
-            id="program"
-            required
-          >
-
-            <option value="">
-              Memuat data...
-            </option>
-
-          </select>
-
-        </div>
-
-
-
-        <!-- JURUSAN -->
-
-        <div class="form-group">
-
-          <label for="jurusan">
-            Jurusan
-            <span class="required">*</span>
-          </label>
-
-          <select
-            id="jurusan"
-            required
-          >
-
-            <option value="">
-              Memuat data...
-            </option>
-
-          </select>
-
-        </div>
-
-
-
-        <!-- SEMESTER -->
-
-        <div class="form-group">
-
-          <label for="semester">
-            Semester
-            <span class="required">*</span>
-          </label>
-
-          <select
-            id="semester"
-            required
-          >
-
-            <option value="">
-              Pilih Semester
-            </option>
-
-          </select>
-
-        </div>
-
-
-      </div>
-
-
-      <div class="form-actions">
-
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onclick="resetForm()"
-        >
-          Reset
-        </button>
-
-
-        <button
-          type="submit"
-          class="btn btn-primary"
-          id="submitButton"
-        >
-          Simpan & Buat Draft Suket
-        </button>
-
-      </div>
-
-    </form>
-
-  </div>
-
-</section>
-
-
-
-<section class="card">
-
-  <div class="card-header">
-
-    <h2 class="card-title">
-      Data Mahasiswa
-    </h2>
-
-    <p class="card-description">
-      Data mahasiswa yang telah tersimpan.
-    </p>
-
-  </div>
-
-
-  <div class="card-body">
-
-
-    <div class="table-toolbar">
-
-      <div class="search-box">
-
-        <span class="search-icon">
-          🔎
-        </span>
-
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Cari NIM, nama, prodi, jurusan..."
-        >
-
-      </div>
 
     </div>
 
-
-
-    <div class="table-wrapper">
-
-      <table>
-
-        <thead id="tableHead">
-        </thead>
-
-        <tbody id="tableBody">
-        </tbody>
-
-      </table>
-
-    </div>
+  </main>
 
 
 
-    <div class="pagination">
+  <!-- =====================================================
+       RESULT MODAL
+       ===================================================== -->
 
-      <div
-        class="pagination-info"
-        id="paginationInfo"
-      >
-        -
-      </div>
+  <div
+    id="resultModal"
+    class="result-modal"
+  >
 
-
-      <div class="pagination-buttons">
-
-        <button
-          class="page-btn"
-          id="prevButton"
-        >
-          ‹
-        </button>
-
-        <button
-          class="page-btn"
-          id="nextButton"
-        >
-          ›
-        </button>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-</main>
-
-
-
-<!-- =====================================================
-     MODAL HASIL DRAFT
-====================================================== -->
-
-<div
-  class="modal"
-  id="resultModal"
->
-
-  <div class="modal-card">
-
-    <div class="success-icon">
-      ✓
-    </div>
-
-    <h2 class="modal-title">
-      Draft Suket Berhasil Dibuat
-    </h2>
-
-    <p
-      class="modal-text"
-      id="resultText"
+    <div
+      class="modal-content success-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="resultModalTitle"
     >
-      Dokumen berhasil dibuat.
-    </p>
 
 
-    <div class="modal-actions">
-
-      <a
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-        id="draftLink"
-        class="btn btn-primary"
-      >
-        📄 Buka Draft
-      </a>
-
-
-      <a
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-        id="pdfLink"
-        class="btn btn-success"
-      >
-        ⬇ Download PDF
-      </a>
-
+      <!-- CLOSE -->
 
       <button
-        class="btn btn-secondary"
-        onclick="closeResult()"
+        type="button"
+        class="modal-close"
+        onclick="closeResultModal()"
+        aria-label="Tutup"
       >
-        Tutup
+        ×
       </button>
 
+
+      <!-- SUCCESS ICON -->
+
+      <div class="success-icon-wrapper">
+
+        <div class="success-icon">
+
+          <span>
+            ✓
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- TITLE -->
+
+      <div class="modal-heading">
+
+        <span class="modal-kicker">
+          BERHASIL
+        </span>
+
+        <h2 id="resultModalTitle">
+          Draft Suket Berhasil Dibuat
+        </h2>
+
+        <p id="resultText">
+          Data mahasiswa berhasil disimpan
+          dan surat berhasil dibuat.
+        </p>
+
+      </div>
+
+
+      <!-- DOCUMENT INFO -->
+
+      <div class="document-info">
+
+        <div class="document-info-icon">
+          📄
+        </div>
+
+        <div>
+
+          <span class="document-label">
+            DOKUMEN SURAT
+          </span>
+
+          <strong>
+            Surat Keterangan Aktif Kuliah
+          </strong>
+
+          <small>
+            Draft dan PDF telah tersedia.
+          </small>
+
+        </div>
+
+      </div>
+
+
+      <!-- MODAL ACTIONS -->
+
+      <div class="modal-actions">
+
+
+        <a
+          id="draftLink"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="modal-button modal-button-draft"
+        >
+
+          <span class="button-icon">
+            📄
+          </span>
+
+          <span>
+            Buka Draft
+          </span>
+
+          <span class="button-arrow">
+            ↗
+          </span>
+
+        </a>
+
+
+        <a
+          id="pdfLink"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="modal-button modal-button-pdf"
+        >
+
+          <span class="button-icon">
+            ↓
+          </span>
+
+          <span>
+            Download PDF
+          </span>
+
+          <span class="button-arrow">
+            ↗
+          </span>
+
+        </a>
+
+
+      </div>
+
+
+      <!-- CLOSE BUTTON -->
+
+      <button
+        type="button"
+        class="modal-secondary-button"
+        onclick="closeResultModal()"
+      >
+        Selesai
+      </button>
+
+
+      <div class="modal-security-note">
+
+        <span>🔒</span>
+
+        Dokumen tersimpan secara otomatis
+        di Google Drive.
+
+      </div>
+
+
     </div>
 
   </div>
 
-</div>
 
 
+  <!-- =====================================================
+       LOADING OVERLAY
+       ===================================================== -->
 
-<!-- =====================================================
-     LOADING
-====================================================== -->
+  <div
+    id="loadingOverlay"
+    class="loading-overlay"
+  >
 
-<div
-  class="loading-overlay"
-  id="loadingOverlay"
->
+    <div class="loading-card">
 
-  <div class="loading-box">
+      <div class="loading-spinner"></div>
 
-    <div class="spinner"></div>
+      <div class="loading-title">
+        Sedang Memproses
+      </div>
 
-    <div>
-      Sedang memproses...
+      <div class="loading-text">
+        Memproses...
+      </div>
+
+      <div class="loading-progress">
+        Mohon tunggu sebentar
+      </div>
+
     </div>
 
   </div>
 
-</div>
+
+
+  <!-- =====================================================
+       TOAST
+       ===================================================== -->
+
+  <div
+    id="toast"
+    class="toast"
+  ></div>
 
 
 
-<!-- =====================================================
-     TOAST
-====================================================== -->
+  <!-- =====================================================
+       JAVASCRIPT
+       ===================================================== -->
 
-<div
-  class="toast"
-  id="toast"
-></div>
-
-
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 
 </body>
 
